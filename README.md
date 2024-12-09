@@ -1,7 +1,7 @@
 # Assembly Pong Game
 
 ## Overview
-This project is a classic **Pong Game** written in x86 Assembly language using the **NASM assembler**. It is a two-player game that demonstrates advanced assembly programming concepts like keyboard interrupt handling, real-time input, graphics rendering, and sound generation.
+This project is a classic **Pong Game** written in x86 Assembly language using the **NASM assembler**. It is a two-player game that demonstrates advanced assembly programming concepts like keyboard interrupt handling, real-time input, graphics rendering.
 
 The game includes features such as:
 - Paddle movement controlled by keyboard input.
