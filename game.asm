@@ -4,8 +4,7 @@ intro db ' -------Welcome to the Ping Pong Game-------',0
 cont1: db '     Press any key to play....',0
 msg1: db '      Press ESC key to exit',0
 devs: db '   This game is developed by',0
-dev1: db ' [1] Bilal Mohsin',0
-dev2: db ' [2] Jawad Jameel',0
+dev: db '   Bilal Mohsin',0
 player1: db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ;names
 player2: db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 pause_msg: db '    Press P for pause/unpause',0
@@ -25,6 +24,8 @@ score_str: db 'scores: ',0
 ball_row: dw 12
 ball_col: dw 40
 max_score: dw 5         ;game limit  
+
+;=============DELAY FUNCTION==========
 delay:
     push cx       
     push dx
@@ -39,12 +40,15 @@ inner_loop:
     pop dx      
     pop cx
     ret
+
+
+;=============BALL FUNCTIONS==========
 print_ball:
 push dx
 push bx
 push ax
 push bp
-    
+
 
 	mov ax, 0xB800
 	mov es, ax
@@ -72,6 +76,7 @@ reset_ball:
     mov word[ball_row],12
     mov word[ball_col],40
     ret
+
 clr_ball:
 push cx
 push dx
@@ -98,7 +103,7 @@ pop cx
 ret
           
 
-
+;=============BALL MOVEMENT/COLLISION FUNCTIONS==========
 ball_dir: dw 0
 coll_found: db 0     ;flag to check if collision with padel found(of ball)
 check_left_paddle:
@@ -172,47 +177,6 @@ paddle_hit_right:
     pop dx
     pop ax
     ret
-
-when_up_right:
-    cmp word [ball_row], 2          ;check if hitted top boundary
-    jne do_nothing1                 ;skip if not 
-    cmp word [ball_dir], 0          ;check if moving up-right
-    jne do_nothing1                 ;Skip if not
-    mov word [ball_dir], 2          ;change direction to down-right
-    ret
-do_nothing1:
-    ret
-
-when_up_left:
-    cmp word [ball_row], 2          ;check if hitted top boundary
-    jne do_nothing2                 ;skip if not
-    cmp word [ball_dir], 1          ;check if moving up-left
-    jne do_nothing2                 ;skip if not
-    mov word [ball_dir], 3          ;change direction to down-left
-    ret
-do_nothing2:
-    ret
-
-when_down_right:
-    cmp word [ball_row], 23         ;check if hitted bottom boundary
-    jne do_nothing3                 ;skip if not
-    cmp word [ball_dir], 2          ;check if moving down-right
-    jne do_nothing3                 ;skip if not
-    mov word [ball_dir], 0          ;change direction to up-right
-    ret
-do_nothing3:
-    ret
-
-when_down_left:
-    cmp word [ball_row], 23         ;check if hitted bottom boundary
-    jne do_nothing4                 ;skip if not
-    cmp word [ball_dir], 3          ;check if moving down-left
-    jne do_nothing4
-    mov word [ball_dir], 1          ;change direction to up-left
-    ret
-do_nothing4:
-    ret
-
 
 ;this function reflects the ball based on its direction (horizontal)
 handle_paddle_collision:
@@ -290,7 +254,7 @@ player_2_scores:
 
 
 
-
+;=============MOVE BALL FUNCTION==========
 move_ball:
     call find_ball_direction
 
@@ -335,6 +299,7 @@ move_down_left:
     ret
 
 
+;=============PRINTING SCORE FUNCTIONS==========
 
 print_score_p1: ;creating seperate for both would allow us to print any time without passing anything
                 ;bcz during the game we would need to print multiple times 
@@ -407,6 +372,8 @@ pop bx
 pop ax
 ret
 
+;=============CLEAR SCREEN FUNCTION==========
+
 clrscr:
 push es
 push ax
@@ -426,6 +393,8 @@ pop ax
 pop es
 ret
 
+;=============LENGTH CALCULATOR FUNCTION==========
+
 strlen:
       push bp
       mov bp,sp
@@ -444,6 +413,8 @@ strlen:
       pop es
       pop bp
       ret 4
+
+;=============CREATING BORDERS FUNCTIONS==========
 
 print_border:   ;this function would just print borders (top/bottom)
 push bp
@@ -495,6 +466,8 @@ pop di
 pop ax
 pop bp
 ret 4
+;=============STRING PRINTING FUNCTION==========
+
 printstr:
     push bp
     mov bp,sp
@@ -522,6 +495,9 @@ printstr:
     pop ax
     pop bp
     ret 
+
+;=============CREATING GAME BOARD FUNCTION==========
+
 print_board:
 call clrscr
 ;print scores string
@@ -632,28 +608,17 @@ print_menu:
          add sp, 8 
       ;third one
          push ds
-         mov ax,dev1   ;dev1 msg
+         mov ax,dev   ;dev msg
          push ax
          call strlen
          push word 0x09    ;attribute
          push ax        ;lenght
-         mov ax,dev1
+         mov ax,dev
          push ax
          push 0x0921 ;row/col number
          call printstr
          add sp, 8 
-       ;fourth one
-         push ds
-         mov ax,dev2   ;dev2 msg
-         push ax
-         call strlen
-         push word 0x09    ;attribute
-         push ax        ;lenght
-         mov ax,dev2
-         push ax
-         push 0x0A21 ;row/col number
-         call printstr
-         add sp, 8
+       
        ;fifth one
          push ds
          mov ax,cont1   ;continue msg
@@ -663,7 +628,7 @@ print_menu:
          push ax        ;lenght
          mov ax,cont1
          push ax
-         push 0x0B19 ;row/col number
+         push 0x0A19 ;row/col number
          call printstr
          add sp, 8
        ;sxith one
@@ -675,7 +640,7 @@ print_menu:
          push ax        ;lenght
          mov ax,msg1
          push ax
-         push 0x0C19 ;row/col number
+         push 0x0B19 ;row/col number
          call printstr
          add sp, 8
        ;seventh one
@@ -687,7 +652,7 @@ print_menu:
          push ax        ;lenght
          mov ax,pause_msg
          push ax
-         push 0x0D19 ;row/col number
+         push 0x0C19 ;row/col number
          call printstr
          add sp, 8
        ;instructions
@@ -699,11 +664,12 @@ print_menu:
          push ax        ;lenght
          mov ax,movement_str
          push ax
-         push 0x0E19 ;row/col number
+         push 0x0D19 ;row/col number
          call printstr
          add sp, 8
 
 ret
+;=============FUNCTIONS TO TAKE NAME INPUTS==========
 
 input_name:
 push bp
@@ -754,6 +720,8 @@ push ax
 pop ax
 pop bp
 ret 4
+
+;=============PADDLE FUNCTIONS==========
 
 padel_print_func_p1:
 push bp
@@ -820,6 +788,7 @@ pop bx
 pop ax
 pop bp
 ret 
+
 
 clr_padel:
 push cx
@@ -948,6 +917,9 @@ pause_game:
      call padel_print_func_p2
 
      jmp exit_input     ;to correctly return
+
+;=============WINNER CHECK FUNCTIONS==========
+
 score_check:
      push ax
      mov ax,[max_score]
@@ -996,6 +968,9 @@ prnt_has_won:
          add sp, 8
          pop ax ;remove address
          jmp exit
+
+;=============MAIN FUNCTION==========
+
 start:
      call clrscr
 
